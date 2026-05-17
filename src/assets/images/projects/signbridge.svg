@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" fill="none">
+  <!-- Background -->
+  <rect width="640" height="360" fill="#f4f4f5"/>
+
+  <!-- Grid -->
+  <line x1="0" y1="60" x2="640" y2="60" stroke="#e4e4e7" stroke-width="1"/>
+  <line x1="0" y1="120" x2="640" y2="120" stroke="#e4e4e7" stroke-width="1"/>
+  <line x1="0" y1="180" x2="640" y2="180" stroke="#e4e4e7" stroke-width="1"/>
+  <line x1="0" y1="240" x2="640" y2="240" stroke="#e4e4e7" stroke-width="1"/>
+  <line x1="0" y1="300" x2="640" y2="300" stroke="#e4e4e7" stroke-width="1"/>
+  <line x1="128" y1="0" x2="128" y2="360" stroke="#e4e4e7" stroke-width="1"/>
+  <line x1="320" y1="0" x2="320" y2="360" stroke="#e4e4e7" stroke-width="1"/>
+  <line x1="512" y1="0" x2="512" y2="360" stroke="#e4e4e7" stroke-width="1"/>
+
+  <!-- Left panel: hand/ASL -->
+  <rect x="30" y="50" width="230" height="240" rx="4" fill="white" stroke="#d4d4d8" stroke-width="1.5"/>
+  <text x="145" y="75" font-family="monospace" font-size="10" fill="#71717a" text-anchor="middle">INPUT: ASL GESTURE</text>
+
+  <!-- Camera frame icon -->
+  <rect x="75" y="85" width="140" height="100" rx="6" fill="#f4f4f5" stroke="#27272a" stroke-width="2"/>
+  <!-- Camera notch top -->
+  <rect x="120" y="80" width="50" height="12" rx="3" fill="#27272a"/>
+  <!-- Hand gesture inside camera -->
+  <!-- Palm -->
+  <rect x="115" y="120" width="34" height="44" rx="5" fill="#27272a"/>
+  <!-- Fingers -->
+  <rect x="115" y="98" width="8" height="28" rx="4" fill="#27272a"/>
+  <rect x="127" y="92" width="8" height="34" rx="4" fill="#27272a"/>
+  <rect x="139" y="92" width="8" height="34" rx="4" fill="#27272a"/>
+  <rect x="151" y="98" width="8" height="28" rx="4" fill="#27272a"/>
+  <!-- Thumb -->
+  <rect x="104" y="116" width="14" height="8" rx="4" fill="#27272a"/>
+
+  <!-- Landmark dots -->
+  <circle cx="119" cy="98" r="3" fill="white" stroke="#000" stroke-width="1"/>
+  <circle cx="131" cy="92" r="3" fill="white" stroke="#000" stroke-width="1"/>
+  <circle cx="143" cy="92" r="3" fill="white" stroke="#000" stroke-width="1"/>
+  <circle cx="155" cy="98" r="3" fill="white" stroke="#000" stroke-width="1"/>
+  <circle cx="132" cy="120" r="3" fill="white" stroke="#000" stroke-width="1"/>
+
+  <!-- Label A -->
+  <rect x="95" y="200" width="100" height="28" rx="4" fill="black"/>
+  <text x="145" y="219" font-family="monospace" font-size="13" fill="white" text-anchor="middle" font-weight="bold">ASL: "A"</text>
+
+  <!-- Confidence bar -->
+  <text x="75" y="252" font-family="monospace" font-size="9" fill="#71717a">confidence</text>
+  <rect x="75" y="255" width="140" height="8" rx="4" fill="#e4e4e7"/>
+  <rect x="75" y="255" width="118" height="8" rx="4" fill="#000"/>
+  <text x="221" y="263" font-family="monospace" font-size="9" fill="#000">84%</text>
+
+  <!-- Arrow in middle -->
+  <text x="320" y="175" font-family="monospace" font-size="28" fill="#000" text-anchor="middle">→</text>
+  <!-- labels on arrow -->
+  <text x="320" y="195" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">LangChain</text>
+  <text x="320" y="207" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">Gemini 1.5</text>
+
+  <!-- Right panel: text output -->
+  <rect x="380" y="50" width="230" height="240" rx="4" fill="white" stroke="#d4d4d8" stroke-width="1.5"/>
+  <text x="495" y="75" font-family="monospace" font-size="10" fill="#71717a" text-anchor="middle">OUTPUT: ENGLISH</text>
+
+  <!-- Chat bubble style output -->
+  <rect x="405" y="88" width="180" height="52" rx="8" fill="#000"/>
+  <path d="M420 140 L410 155 L435 140 Z" fill="#000"/>
+  <text x="495" y="110" font-family="monospace" font-size="11" fill="white" text-anchor="middle">"Hello, how are</text>
+  <text x="495" y="126" font-family="monospace" font-size="11" fill="white" text-anchor="middle">you today?"</text>
+
+  <!-- Waveform / NLP processing -->
+  <text x="495" y="180" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">NLP PROCESSING</text>
+  <polyline points="405,200 420,185 430,205 442,190 454,210 466,188 478,202 490,192 502,208 514,185 526,200 538,190 550,205 565,195 575,200 585,200" stroke="#000" stroke-width="2" fill="none"/>
+
+  <!-- Model info -->
+  <text x="495" y="235" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">MobileNetV2 + LSTM</text>
+  <text x="495" y="248" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">→ Gemini 1.5 Flash</text>
+  <text x="495" y="268" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">Deployed on Cloud Run</text>
+
+  <!-- Bottom label bar -->
+  <rect x="20" y="312" width="160" height="22" rx="3" fill="black"/>
+  <text x="100" y="327" font-family="monospace" font-size="10" fill="white" text-anchor="middle" font-weight="bold">SignBridge • ASL→EN</text>
+
+  <rect x="192" y="314" width="76" height="18" rx="2" fill="white" stroke="#d4d4d8" stroke-width="1"/>
+  <text x="230" y="327" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">MobileNetV2</text>
+  <rect x="276" y="314" width="38" height="18" rx="2" fill="white" stroke="#d4d4d8" stroke-width="1"/>
+  <text x="295" y="327" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">LSTM</text>
+  <rect x="322" y="314" width="56" height="18" rx="2" fill="white" stroke="#d4d4d8" stroke-width="1"/>
+  <text x="350" y="327" font-family="monospace" font-size="9" fill="#71717a" text-anchor="middle">LangChain</text>
+</svg>

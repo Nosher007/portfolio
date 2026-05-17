@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" fill="none">
+  <!-- Body / torso -->
+  <ellipse cx="240" cy="310" rx="90" ry="50" fill="#f4f4f5" stroke="#000" stroke-width="2.5"/>
+  <!-- Legs crossed -->
+  <path d="M160 340 Q180 380 220 370 Q240 360 260 370 Q300 380 320 340" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="185" cy="370" rx="30" ry="22" fill="#f4f4f5" stroke="#000" stroke-width="2"/>
+  <ellipse cx="295" cy="370" rx="30" ry="22" fill="#f4f4f5" stroke="#000" stroke-width="2"/>
+  <!-- Laptop base -->
+  <rect x="175" y="320" width="150" height="90" rx="6" fill="#000" stroke="#000" stroke-width="2"/>
+  <rect x="183" y="328" width="134" height="74" rx="4" fill="#fff" stroke="#000" stroke-width="1.5"/>
+  <!-- Screen lines (code) -->
+  <line x1="195" y1="342" x2="285" y2="342" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="195" y1="352" x2="265" y2="352" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="195" y1="362" x2="275" y2="362" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="195" y1="372" x2="250" y2="372" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="195" y1="382" x2="270" y2="382" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Head -->
+  <circle cx="240" cy="220" r="55" fill="#fff" stroke="#000" stroke-width="2.5"/>
+  <!-- Hair -->
+  <path d="M186 215 Q188 170 240 165 Q292 170 294 215 Q285 190 240 188 Q195 190 186 215Z" fill="#000"/>
+  <!-- Eyes -->
+  <ellipse cx="222" cy="218" rx="7" ry="8" fill="#000"/>
+  <ellipse cx="258" cy="218" rx="7" ry="8" fill="#000"/>
+  <circle cx="224" cy="216" r="2.5" fill="#fff"/>
+  <circle cx="260" cy="216" r="2.5" fill="#fff"/>
+  <!-- Nose -->
+  <path d="M238 228 Q240 235 242 228" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Mouth -->
+  <path d="M228 242 Q240 252 252 242" stroke="#000" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Left arm -->
+  <path d="M155 300 Q145 330 165 345" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Right arm -->
+  <path d="M325 300 Q335 330 315 345" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Neck -->
+  <rect x="228" y="270" width="24" height="30" rx="8" fill="#fff" stroke="#000" stroke-width="2"/>
+  <!-- Shoulders -->
+  <path d="M155 298 Q180 275 240 270 Q300 275 325 298" stroke="#000" stroke-width="2.5" fill="#fff" stroke-linecap="round"/>
+  <!-- Floating elements -->
+  <circle cx="90" cy="180" r="18" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="380" cy="140" r="12" fill="none" stroke="#000" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <path d="M390 200 L400 215 L380 215 Z" fill="none" stroke="#000" stroke-width="1.5"/>
+  <rect x="70" y="250" width="22" height="22" rx="3" fill="none" stroke="#000" stroke-width="1.5" transform="rotate(15 81 261)"/>
+</svg>
