@@ -44,7 +44,7 @@ export default function Navbar() {
 
         {/* Resume CTA */}
         <a
-          href="/resume.pdf"
+          href="/Resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
           className="hidden md:flex items-center gap-2 border border-black text-black font-sora text-p3 font-semibold px-4 py-2 hover:bg-black hover:text-white transition-colors"
@@ -81,7 +81,7 @@ export default function Navbar() {
             ))}
           </ul>
           <a
-            href="/resume.pdf"
+            href="/Resume.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 inline-flex items-center gap-2 border border-black text-black font-sora text-p3 font-semibold px-4 py-2"
