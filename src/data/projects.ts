@@ -11,7 +11,7 @@ export const projects: Project[] = [
     tags: ['LangGraph', 'RAG', 'GCP', 'Python', 'Cloud Run'],
     description:
       'A 5-agent autonomous security platform that ingests CVE data, performs RAG-based analysis, and generates remediation reports. Deployed on Cloud Run with 332 automated tests.',
-    githubUrl: 'https://github.com/Nosher007',
+    githubUrl: 'https://github.com/Nosher007/cybersentinel',
     image: cybersentinelImg,
   },
   {
@@ -20,7 +20,7 @@ export const projects: Project[] = [
     tags: ['MobileNetV2', 'LSTM', 'LangChain', 'Gemini 1.5', 'GCP'],
     description:
       'Real-time ASL-to-English translation system combining a MobileNetV2+LSTM vision model with LangChain and Gemini 1.5 for natural language output. Owns data pipeline, LLM integration, UI, and Cloud Run deployment.',
-    githubUrl: 'https://github.com/Nosher007',
+    githubUrl: 'https://github.com/Nosher007/signbridge',
     image: signbridgeImg,
   },
   {
