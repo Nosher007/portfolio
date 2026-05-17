@@ -158,6 +158,14 @@ export default function Contact() {
                 267-591-9208
               </a>
             </div>
+            <a
+              href="https://calendly.com/nosherwanbabar/15min"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2 bg-black text-white font-sora font-semibold text-p2 px-6 py-3 hover:bg-zinc-800 transition-colors"
+            >
+              Book a Meeting ↗
+            </a>
           </div>
 
         </div>
