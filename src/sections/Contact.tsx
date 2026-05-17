@@ -43,7 +43,7 @@ export default function Contact() {
         <div className="flex flex-col lg:flex-row gap-16 items-start">
 
           {/* Form */}
-          <div className="flex-1 w-full">
+          <div className="flex-1 w-full order-2 lg:order-1">
             {status === 'success' ? (
               <div className="border border-zinc-200 px-8 py-12 flex flex-col items-center text-center gap-4">
                 <div className="w-12 h-12 border-2 border-black flex items-center justify-center">
@@ -128,7 +128,7 @@ export default function Contact() {
           </div>
 
           {/* Contact details */}
-          <div className="lg:w-80 flex-shrink-0">
+          <div className="lg:w-80 flex-shrink-0 order-1 lg:order-2">
             <h2 className="font-sora font-bold text-h2 text-black mb-2 leading-tight">
               Let's{' '}
               <span className="relative inline-block">
