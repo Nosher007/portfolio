@@ -17,7 +17,7 @@ export const experiences: Experience[] = [
     title: 'Junior Software Engineer',
     company: 'Buggcy',
     location: 'Remote',
-    startDate: 'August 2023',
+    startDate: 'January 2023',
     endDate: 'August 2024',
     bullets: [
       'Built full-stack features and REST APIs across multiple client projects',
