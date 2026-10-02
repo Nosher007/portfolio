@@ -367,32 +367,38 @@ export class ConstellationEngine {
     g.scale.setScalar(s.rect.r * unitsPerPx * zoom)
 
     /* --- 4. rotation: idle spin + pointer tilt, blended with "face this hub" --- */
-    const calm = c.hoverHub >= 0 || c.dockExpanded
-    const spinTarget = c.reduced ? 0 : calm ? 0.015 : 0.11
-    s.spinSpeed += (spinTarget - s.spinSpeed) * damp(3, dt)
-    s.spin += dt * s.spinSpeed
-    const tiltOn = mode === 'hero' && !c.reduced
-    s.tilt.x += ((tiltOn ? c.pointer.y * 0.22 : 0) - s.tilt.x) * damp(3, dt)
-    s.tilt.y += ((tiltOn ? c.pointer.x * 0.3 : 0) - s.tilt.y) * damp(3, dt)
-    s.qIdle.setFromEuler(tmp.euler.set(0.32 + s.tilt.x, s.spin + s.tilt.y, 0.08))
+    // While a hub is hovered the whole sphere freezes (spin, tilt and any
+    // turn-to-face motion) so the target never slides away mid-click
+    const frozen = c.hoverHub >= 0 && !c.dive
+    if (frozen) {
+      s.spinSpeed = 0
+    } else {
+      const spinTarget = c.reduced ? 0 : c.dockExpanded ? 0.015 : 0.11
+      s.spinSpeed += (spinTarget - s.spinSpeed) * damp(3, dt)
+      s.spin += dt * s.spinSpeed
+      const tiltOn = mode === 'hero' && !c.reduced
+      s.tilt.x += ((tiltOn ? c.pointer.y * 0.22 : 0) - s.tilt.x) * damp(3, dt)
+      s.tilt.y += ((tiltOn ? c.pointer.x * 0.3 : 0) - s.tilt.y) * damp(3, dt)
+      s.qIdle.setFromEuler(tmp.euler.set(0.32 + s.tilt.x, s.spin + s.tilt.y, 0.08))
 
-    const focusTarget = c.dive
-      ? c.dive.hub
-      : c.focusHub >= 0
-        ? c.focusHub
-        : mode !== 'hero' && c.activeHub >= 0
-          ? c.activeHub
-          : -1
-    if (s.w < 0.01) s.qFocus.copy(s.qIdle)
-    if (focusTarget >= 0) {
-      tmp.qT.setFromUnitVectors(hubDirs[focusTarget], tmp.z)
-      const wobble = c.reduced || c.dive ? 0 : 1
-      tmp.qW.setFromEuler(tmp.euler.set(0.1 * Math.sin(t * 0.4) * wobble, 0.28 * Math.sin(t * 0.25) * wobble, 0))
-      tmp.qT.premultiply(tmp.qW)
-      s.qFocus.slerp(tmp.qT, damp(c.dive ? 7 : 3, dt))
+      const focusTarget = c.dive
+        ? c.dive.hub
+        : c.focusHub >= 0
+          ? c.focusHub
+          : mode !== 'hero' && c.activeHub >= 0
+            ? c.activeHub
+            : -1
+      if (s.w < 0.01) s.qFocus.copy(s.qIdle)
+      if (focusTarget >= 0) {
+        tmp.qT.setFromUnitVectors(hubDirs[focusTarget], tmp.z)
+        const wobble = c.reduced || c.dive ? 0 : 1
+        tmp.qW.setFromEuler(tmp.euler.set(0.1 * Math.sin(t * 0.4) * wobble, 0.28 * Math.sin(t * 0.25) * wobble, 0))
+        tmp.qT.premultiply(tmp.qW)
+        s.qFocus.slerp(tmp.qT, damp(c.dive ? 7 : 3, dt))
+      }
+      s.w += ((focusTarget >= 0 ? 1 : 0) - s.w) * damp(c.dive ? 6 : 2.4, dt)
+      g.quaternion.copy(tmp.q.copy(s.qIdle).slerp(s.qFocus, s.w))
     }
-    s.w += ((focusTarget >= 0 ? 1 : 0) - s.w) * damp(c.dive ? 6 : 2.4, dt)
-    g.quaternion.copy(tmp.q.copy(s.qIdle).slerp(s.qFocus, s.w))
     g.updateMatrixWorld()
 
     /* --- 5. hub highlights (hover, focus, current section, idle hint cycle) --- */
@@ -512,6 +518,7 @@ export class ConstellationEngine {
       p.el.style.pointerEvents = p.op > 0.35 ? 'auto' : 'none'
       p.el.style.transform = `translate3d(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px, 0) translate(0, -50%)`
       p.el.dataset.lit = highlight[p.i] > 0.55 ? 'true' : 'false'
+      p.el.dataset.side = p.left ? 'left' : 'right'
     }
     return s.opacity > 0.003
   }
