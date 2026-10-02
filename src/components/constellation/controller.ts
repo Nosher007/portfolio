@@ -18,6 +18,8 @@ export interface Controller {
   /** Hide the mini-map, e.g. while typing in the contact form on a phone */
   suppressDock: boolean
   labelEls: (HTMLElement | null)[]
+  /** Where each hub node is on screen this frame, and how visible it is */
+  hubScreen: { x: number; y: number; op: number }[]
   flashEl: HTMLElement | null
   onModeChange: (mode: Mode) => void
   onDiveArrive: (hub: number) => void

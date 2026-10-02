@@ -20,6 +20,7 @@ export default function Constellation() {
   const [compact] = useState(isCompact)
   const closeTimer = useRef(0)
   const dockRef = useRef<HTMLDivElement>(null)
+  const pressedAt = useRef(-Infinity)
 
   const ctl = useRef<Controller>({
     mode: 'hero',
@@ -33,6 +34,7 @@ export default function Constellation() {
     compact,
     suppressDock: false,
     labelEls: [],
+    hubScreen: [],
     flashEl: null,
     onModeChange: () => {},
     onDiveArrive: () => {},
@@ -49,6 +51,25 @@ export default function Constellation() {
     window.clearTimeout(closeTimer.current)
     closeTimer.current = window.setTimeout(() => setDock(false), 260)
   }, [setDock])
+
+  /** Visible hub whose node or label is closest to a screen point (within reach), or -1 */
+  const nearestHub = useCallback((x: number, y: number) => {
+    let best = -1
+    let bestD = 56
+    ctl.current.hubScreen.forEach((h, i) => {
+      if (!h || h.op < 0.5) return
+      const r = ctl.current.labelEls[i]?.getBoundingClientRect()
+      const toLabel = r
+        ? Math.hypot(Math.max(r.left - x, 0, x - r.right), Math.max(r.top - y, 0, y - r.bottom))
+        : Infinity
+      const d = Math.min(Math.hypot(h.x - x, h.y - y), toLabel)
+      if (d < bestD) {
+        bestD = d
+        best = i
+      }
+    })
+    return best
+  }, [])
 
   const navigate = useCallback(
     (i: number) => {
@@ -153,22 +174,19 @@ export default function Constellation() {
 
   return (
     <>
-      {/* Soft disc behind the mini-map so it stays legible over any section */}
-      <div
-        aria-hidden
-        className={`pointer-events-none fixed z-20 rounded-full border border-white/10 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] backdrop-blur-md transition-all duration-500 ${
-          inDock ? 'opacity-100' : 'scale-50 opacity-0'
-        } ${expanded ? 'bg-ink-950/95' : 'bg-ink-950/80'}`}
-        style={{ width: dockSize, height: dockSize, right: margin, bottom: margin }}
-      />
-
       <ConstellationCanvas ctl={ctl} compact={compact} />
 
       {/* Mini-map hit area: hover (desktop) or tap (touch) to expand */}
       <div
         ref={dockRef}
-        className={`fixed z-40 rounded-full transition-all duration-500 ${inDock ? '' : 'pointer-events-none'}`}
-        style={{ width: dockSize, height: dockSize, right: margin, bottom: margin }}
+        className={`fixed z-40 transition-all duration-300 ${expanded ? 'rounded-3xl' : 'rounded-full'} ${inDock ? '' : 'pointer-events-none'}`}
+        // When open, the hit area also spans the labels to the left of the sphere
+        style={{
+          width: expanded ? Math.min(dockSize + 170, window.innerWidth - 2 * margin) : dockSize,
+          height: expanded ? dockSize + 30 : dockSize,
+          right: margin,
+          bottom: margin,
+        }}
         onMouseEnter={() => {
           if (!inDock) return
           holdOpen()
@@ -181,8 +199,23 @@ export default function Constellation() {
           tabIndex={inDock ? 0 : -1}
           aria-label={expanded ? 'Close section map' : 'Open section map'}
           aria-expanded={expanded}
-          onClick={() => setDock(!expanded)}
-          className="h-full w-full rounded-full"
+          onPointerDown={(e) => {
+            if (e.pointerType !== 'mouse' || e.button !== 0 || !expanded) return
+            // Mouse on the open map: go to the node nearest the cursor, and never
+            // close the map from a near-miss (it closes when the mouse leaves)
+            e.preventDefault()
+            pressedAt.current = performance.now()
+            const hub = nearestHub(e.clientX, e.clientY)
+            if (hub >= 0) navigate(hub)
+          }}
+          onClick={(e) => {
+            if (performance.now() - pressedAt.current < 800) return
+            // Keyboard toggles; a tap on the open map picks the nearest node
+            const hub = expanded && e.detail > 0 ? nearestHub(e.clientX, e.clientY) : -1
+            if (hub >= 0) navigate(hub)
+            else setDock(!expanded)
+          }}
+          className="h-full w-full rounded-[inherit]"
         />
       </div>
 
@@ -213,7 +246,19 @@ export default function Constellation() {
             }}
             aria-label={hub.id === 'resume' ? 'Open resume (PDF)' : `Go to ${hub.label}`}
             style={{ visibility: 'hidden', opacity: 0 }}
-            onClick={() => navigate(i)}
+            // Mouse: act on press, so the label moving before release (the
+            // mini-map grows as it opens) can't swallow the click.
+            // Keyboard (detail 0) and touch still go through onClick.
+            onPointerDown={(e) => {
+              if (e.pointerType !== 'mouse' || e.button !== 0) return
+              e.preventDefault()
+              pressedAt.current = performance.now()
+              navigate(i)
+            }}
+            onClick={() => {
+              // Skip the click that follows a mouse press we already acted on
+              if (performance.now() - pressedAt.current > 800) navigate(i)
+            }}
             onMouseEnter={() => {
               ctl.current.hoverHub = i
               holdOpen()

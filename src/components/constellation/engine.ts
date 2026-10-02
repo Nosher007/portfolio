@@ -169,6 +169,8 @@ export class ConstellationEngine {
     qIdle: Quaternion
     qFocus: Quaternion
     snapNext: boolean
+    /** Flying between hero and corner (slow glide) rather than resizing in place */
+    gliding: boolean
     flashOutAt: number
     pulses: { from: number; to: number; t: number; speed: number }[]
   }
@@ -273,6 +275,7 @@ export class ConstellationEngine {
       qIdle: new Quaternion(),
       qFocus: new Quaternion(),
       snapNext: false,
+      gliding: false,
       flashOutAt: 0,
       pulses: Array.from({ length: pulseCount }, (_, i) => {
         const from = (i * 37) % nodeCount
@@ -308,6 +311,7 @@ export class ConstellationEngine {
     let mode: Mode = heroVisible ? 'hero' : footerVisible || c.suppressDock ? 'hidden' : 'dock'
     if (c.dive) mode = 'hero'
     if (mode !== s.mode) {
+      s.gliding = true
       s.mode = mode
       c.mode = mode
       c.onModeChange(mode)
@@ -328,10 +332,13 @@ export class ConstellationEngine {
       s.rect = { ...target }
       s.snapNext = false
     } else {
-      const k = damp(mode === 'hero' && !c.dive ? 28 : 6.5, dt)
+      // Track the hero snugly, open/close the mini-map quickly, glide between the two
+      const rate = mode === 'hero' && !c.dive ? 28 : s.gliding ? 6.5 : 16
+      const k = damp(rate, dt)
       s.rect.cx += (target.cx - s.rect.cx) * k
       s.rect.cy += (target.cy - s.rect.cy) * k
       s.rect.r += (target.r - s.rect.r) * k
+      if (Math.abs(target.cx - s.rect.cx) + Math.abs(target.cy - s.rect.cy) < 2) s.gliding = false
     }
     s.opacity += ((mode === 'hidden' ? 0 : 1) - s.opacity) * damp(5, dt)
 
@@ -485,13 +492,15 @@ export class ConstellationEngine {
       tmp.v.project(camera)
       const sx = ((tmp.v.x + 1) / 2) * W
       const sy = ((1 - tmp.v.y) / 2) * H
-      const left = sx < cx
+      // In the corner mini-map there's no room on the right, so labels go left
+      const left = mode === 'dock' || sx < cx
       let op = i === c.focusHub ? 1 : MathUtils.smoothstep(front, -0.45, 0.15)
       // The open mini-map is a menu: every destination stays readable and clickable
       if (menuOpen) op = Math.max(op, 0.8)
       // Sit beside the node, but never past the edge of the screen
       const w = el.offsetWidth
       const x = MathUtils.clamp(left ? sx - 12 - w : sx + 12, 8, W - w - 8)
+      c.hubScreen[i] = { x: sx, y: sy, op }
       placed.push({ el, i, x, y: sy, h: el.offsetHeight, left, op })
     }
 
