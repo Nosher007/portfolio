@@ -39,6 +39,14 @@ export default function App() {
       <Navbar />
       <main>
         <Hero />
+        {/* Fixed-position layer; placed here so its hub buttons follow the hero in tab order */}
+        {webgl && (
+          <SilentBoundary>
+            <Suspense fallback={null}>
+              <Constellation />
+            </Suspense>
+          </SilentBoundary>
+        )}
         <About />
         <Experience />
         <Projects />
@@ -46,13 +54,6 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
-      {webgl && (
-        <SilentBoundary>
-          <Suspense fallback={null}>
-            <Constellation />
-          </Suspense>
-        </SilentBoundary>
-      )}
     </MotionConfig>
   )
 }

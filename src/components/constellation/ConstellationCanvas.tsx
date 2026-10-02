@@ -21,9 +21,11 @@ export default function ConstellationCanvas({ ctl, compact }: { ctl: RefObject<C
     const engine = new ConstellationEngine(compact)
     scene.add(engine.group)
 
+    // Size to the host (excludes the scrollbar), not window.innerWidth,
+    // so the canvas lines up with the fixed-position mini-map disc
     const resize = () => {
-      const w = window.innerWidth
-      const h = window.innerHeight
+      const w = el.clientWidth
+      const h = el.clientHeight
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75))
       renderer.setSize(w, h)
       camera.aspect = w / h
@@ -40,8 +42,8 @@ export default function ConstellationCanvas({ ctl, compact }: { ctl: RefObject<C
       const visible = engine.update(ctl.current, {
         t: (now - start) / 1000,
         dt: (now - last) / 1000,
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: el.clientWidth,
+        height: el.clientHeight,
         dpr: renderer.getPixelRatio(),
         camera,
       })

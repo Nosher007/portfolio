@@ -222,13 +222,16 @@ export default function Constellation() {
               ctl.current.hoverHub = -1
               if (inDock) scheduleClose()
             }}
-            onFocus={() => {
-              ctl.current.focusHub = i
+            onFocus={(e) => {
+              // Only keyboard focus turns the sphere. A mouse press also focuses the
+              // button, and rotating then would slide it out from under the cursor
+              // before mouseup, swallowing the click.
+              if (e.currentTarget.matches(':focus-visible')) ctl.current.focusHub = i
             }}
             onBlur={() => {
               ctl.current.focusHub = -1
             }}
-            className={`group absolute left-0 top-0 flex items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-ink-950/90 font-mono text-zinc-200 backdrop-blur-md transition-[border-color,box-shadow,color] duration-300 will-change-transform hover:border-accent/70 hover:text-white data-[lit=true]:border-accent/60 data-[lit=true]:text-white data-[lit=true]:z-10 data-[lit=true]:shadow-glow ${
+            className={`group absolute left-0 top-0 flex items-center gap-2 whitespace-nowrap rounded-full border border-white/10 bg-ink-950/90 font-mono text-zinc-200 backdrop-blur-md transition-[border-color,box-shadow,color] duration-300 will-change-transform hover:border-accent/70 hover:text-white data-[lit=true]:border-accent/60 data-[lit=true]:text-white data-[lit=true]:z-10 data-[lit=true]:shadow-glow before:absolute before:top-1/2 before:h-9 before:w-9 before:-translate-y-1/2 before:rounded-full before:content-[''] data-[side=left]:before:-right-[30px] data-[side=right]:before:-left-[30px] ${
               inDock ? 'px-2.5 py-1 text-[10px]' : 'px-3 py-1.5 text-[11px]'
             }`}
           >

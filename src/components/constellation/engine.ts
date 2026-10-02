@@ -360,36 +360,45 @@ export class ConstellationEngine {
     const unitsPerPx = (2 * Math.tan(MathUtils.degToRad(camera.fov / 2)) * CAMERA_DIST) / H
     const cx = MathUtils.lerp(s.rect.cx, W / 2, toCentre)
     const cy = MathUtils.lerp(s.rect.cy, H / 2, toCentre)
-    g.position.set((cx - W / 2) * unitsPerPx, (H / 2 - cy) * unitsPerPx, 0)
+    // Shift the projection centre onto the sphere instead of moving the sphere
+    // off-axis, so it stays perfectly round (no perspective skew) in a corner
+    camera.setViewOffset(W, H, W / 2 - cx, H / 2 - cy, W, H)
+    g.position.set(0, 0, 0)
     g.scale.setScalar(s.rect.r * unitsPerPx * zoom)
 
     /* --- 4. rotation: idle spin + pointer tilt, blended with "face this hub" --- */
-    const calm = c.hoverHub >= 0 || c.dockExpanded
-    const spinTarget = c.reduced ? 0 : calm ? 0.015 : 0.11
-    s.spinSpeed += (spinTarget - s.spinSpeed) * damp(3, dt)
-    s.spin += dt * s.spinSpeed
-    const tiltOn = mode === 'hero' && !c.reduced
-    s.tilt.x += ((tiltOn ? c.pointer.y * 0.22 : 0) - s.tilt.x) * damp(3, dt)
-    s.tilt.y += ((tiltOn ? c.pointer.x * 0.3 : 0) - s.tilt.y) * damp(3, dt)
-    s.qIdle.setFromEuler(tmp.euler.set(0.32 + s.tilt.x, s.spin + s.tilt.y, 0.08))
+    // While a hub is hovered the whole sphere freezes (spin, tilt and any
+    // turn-to-face motion) so the target never slides away mid-click
+    const frozen = c.hoverHub >= 0 && !c.dive
+    if (frozen) {
+      s.spinSpeed = 0
+    } else {
+      const spinTarget = c.reduced ? 0 : c.dockExpanded ? 0.015 : 0.11
+      s.spinSpeed += (spinTarget - s.spinSpeed) * damp(3, dt)
+      s.spin += dt * s.spinSpeed
+      const tiltOn = mode === 'hero' && !c.reduced
+      s.tilt.x += ((tiltOn ? c.pointer.y * 0.22 : 0) - s.tilt.x) * damp(3, dt)
+      s.tilt.y += ((tiltOn ? c.pointer.x * 0.3 : 0) - s.tilt.y) * damp(3, dt)
+      s.qIdle.setFromEuler(tmp.euler.set(0.32 + s.tilt.x, s.spin + s.tilt.y, 0.08))
 
-    const focusTarget = c.dive
-      ? c.dive.hub
-      : c.focusHub >= 0
-        ? c.focusHub
-        : mode !== 'hero' && c.activeHub >= 0
-          ? c.activeHub
-          : -1
-    if (s.w < 0.01) s.qFocus.copy(s.qIdle)
-    if (focusTarget >= 0) {
-      tmp.qT.setFromUnitVectors(hubDirs[focusTarget], tmp.z)
-      const wobble = c.reduced || c.dive ? 0 : 1
-      tmp.qW.setFromEuler(tmp.euler.set(0.1 * Math.sin(t * 0.4) * wobble, 0.28 * Math.sin(t * 0.25) * wobble, 0))
-      tmp.qT.premultiply(tmp.qW)
-      s.qFocus.slerp(tmp.qT, damp(c.dive ? 7 : 3, dt))
+      const focusTarget = c.dive
+        ? c.dive.hub
+        : c.focusHub >= 0
+          ? c.focusHub
+          : mode !== 'hero' && c.activeHub >= 0
+            ? c.activeHub
+            : -1
+      if (s.w < 0.01) s.qFocus.copy(s.qIdle)
+      if (focusTarget >= 0) {
+        tmp.qT.setFromUnitVectors(hubDirs[focusTarget], tmp.z)
+        const wobble = c.reduced || c.dive ? 0 : 1
+        tmp.qW.setFromEuler(tmp.euler.set(0.1 * Math.sin(t * 0.4) * wobble, 0.28 * Math.sin(t * 0.25) * wobble, 0))
+        tmp.qT.premultiply(tmp.qW)
+        s.qFocus.slerp(tmp.qT, damp(c.dive ? 7 : 3, dt))
+      }
+      s.w += ((focusTarget >= 0 ? 1 : 0) - s.w) * damp(c.dive ? 6 : 2.4, dt)
+      g.quaternion.copy(tmp.q.copy(s.qIdle).slerp(s.qFocus, s.w))
     }
-    s.w += ((focusTarget >= 0 ? 1 : 0) - s.w) * damp(c.dive ? 6 : 2.4, dt)
-    g.quaternion.copy(tmp.q.copy(s.qIdle).slerp(s.qFocus, s.w))
     g.updateMatrixWorld()
 
     /* --- 5. hub highlights (hover, focus, current section, idle hint cycle) --- */
@@ -461,6 +470,8 @@ export class ConstellationEngine {
     const labelsOn = !c.dive && s.opacity > 0.4 && (mode === 'hero' || (mode === 'dock' && c.dockExpanded))
     tmp.c.setFromMatrixPosition(g.matrixWorld)
     const radius = g.scale.x
+    const menuOpen = mode === 'dock' && c.dockExpanded
+    const placed: { el: HTMLElement; i: number; x: number; y: number; h: number; left: boolean; op: number }[] = []
     for (let i = 0; i < HUB_COUNT; i++) {
       const el = c.labelEls[i]
       if (!el) continue
@@ -474,16 +485,40 @@ export class ConstellationEngine {
       tmp.v.project(camera)
       const sx = ((tmp.v.x + 1) / 2) * W
       const sy = ((1 - tmp.v.y) / 2) * H
-      const left = sx < cx - 4 || mode === 'dock'
-      const op = i === c.focusHub ? 1 : MathUtils.smoothstep(front, -0.45, 0.15)
+      const left = sx < cx
+      let op = i === c.focusHub ? 1 : MathUtils.smoothstep(front, -0.45, 0.15)
+      // The open mini-map is a menu: every destination stays readable and clickable
+      if (menuOpen) op = Math.max(op, 0.8)
       // Sit beside the node, but never past the edge of the screen
       const w = el.offsetWidth
-      const x = MathUtils.clamp(left ? sx - 14 - w : sx + 14, 8, W - w - 8)
-      el.style.visibility = 'visible'
-      el.style.opacity = op.toFixed(3)
-      el.style.pointerEvents = op > 0.35 ? 'auto' : 'none'
-      el.style.transform = `translate3d(${x.toFixed(1)}px, ${sy.toFixed(1)}px, 0) translate(0, -50%)`
-      el.dataset.lit = highlight[i] > 0.55 ? 'true' : 'false'
+      const x = MathUtils.clamp(left ? sx - 12 - w : sx + 12, 8, W - w - 8)
+      placed.push({ el, i, x, y: sy, h: el.offsetHeight, left, op })
+    }
+
+    // Nudge labels on the same side apart so they never overlap
+    for (const side of [true, false]) {
+      const group = placed.filter((p) => p.left === side).sort((a, b) => a.y - b.y)
+      for (let k = 1; k < group.length; k++) {
+        const prev = group[k - 1]
+        const cur = group[k]
+        const minGap = (prev.h + cur.h) / 2 + 6
+        if (cur.y - prev.y < minGap) cur.y = prev.y + minGap
+      }
+      // If the stack ran off the bottom, slide the whole column back up
+      const last = group[group.length - 1]
+      if (last) {
+        const overflow = last.y + last.h / 2 + 8 - H
+        if (overflow > 0) for (const p of group) p.y -= overflow
+      }
+    }
+
+    for (const p of placed) {
+      p.el.style.visibility = 'visible'
+      p.el.style.opacity = p.op.toFixed(3)
+      p.el.style.pointerEvents = p.op > 0.35 ? 'auto' : 'none'
+      p.el.style.transform = `translate3d(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px, 0) translate(0, -50%)`
+      p.el.dataset.lit = highlight[p.i] > 0.55 ? 'true' : 'false'
+      p.el.dataset.side = p.left ? 'left' : 'right'
     }
     return s.opacity > 0.003
   }
