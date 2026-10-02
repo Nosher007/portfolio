@@ -1,4 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import { FiArrowUpRight, FiCalendar, FiMail, FiMapPin, FiPhone } from 'react-icons/fi'
+import Reveal from '../components/ui/Reveal'
+import SectionHeading from '../components/ui/SectionHeading'
+import { CALENDLY, EMAIL, PHONE } from '../lib/links'
 
 type Status = 'idle' | 'sending' | 'success' | 'error'
 
@@ -35,140 +39,145 @@ export default function Contact() {
   }
 
   const inputClass =
-    'w-full border border-zinc-200 px-4 py-3 font-sora text-p2 text-black placeholder:text-zinc-500 focus:outline-none focus:border-black transition-colors'
+    'w-full rounded-xl border border-white/10 bg-ink-950/60 px-4 py-3 text-[15px] text-white placeholder:text-zinc-600 transition-colors focus:border-accent/70 focus:outline-none focus:ring-4 focus:ring-accent/10'
+  const labelClass = 'mb-2 block font-mono text-[11px] uppercase tracking-wider text-zinc-500'
+
+  const details = [
+    { Icon: FiMail, label: EMAIL, href: `mailto:${EMAIL}` },
+    { Icon: FiPhone, label: PHONE.display, href: PHONE.href },
+    { Icon: FiMapPin, label: 'Bethesda, MD' },
+  ]
 
   return (
-    <section id="contact" className="py-20 lg:py-24 bg-white">
-      <div className="max-w-content mx-auto px-6 lg:px-20">
-        <div className="flex flex-col lg:flex-row gap-16 items-start">
+    <section id="contact" className="relative py-24 lg:py-32">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="mx-auto max-w-content px-5 sm:px-6">
+        <SectionHeading index="05" label="Contact">
+          Let&apos;s build something <span className="text-gradient">intelligent.</span>
+        </SectionHeading>
 
-          {/* Form */}
-          <div className="flex-1 w-full order-2 lg:order-1">
-            {status === 'success' ? (
-              <div className="border border-zinc-200 px-8 py-12 flex flex-col items-center text-center gap-4">
-                <div className="w-12 h-12 border-2 border-black flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                </div>
-                <h3 className="font-sora font-bold text-h4 text-black">Message sent!</h3>
-                <p className="font-sora text-p2 text-zinc-500">Thanks for reaching out — I'll get back to you soon.</p>
-                <button
-                  onClick={() => setStatus('idle')}
-                  className="mt-2 font-sora text-p3 font-semibold text-black border-b border-black pb-0.5 hover:text-zinc-500 hover:border-zinc-500 transition-colors"
-                >
-                  Send another message
-                </button>
+        <Reveal>
+          <div className="relative rounded-3xl bg-gradient-to-br from-accent/40 via-white/[0.06] to-accent-cyan/30 p-px">
+            <div className="grid gap-10 rounded-[23px] bg-ink-900 p-6 sm:p-10 lg:grid-cols-[1fr_1.25fr] lg:gap-14">
+              {/* Details */}
+              <div>
+                <p className="text-[17px] leading-relaxed text-zinc-400">
+                  Open to full-time ML engineer, AI engineer, and data scientist roles. Always happy to talk about
+                  projects, research, or collaborations.
+                </p>
+                <ul className="mt-8 space-y-4">
+                  {details.map(({ Icon, label, href }) => (
+                    <li key={label} className="flex items-center gap-3.5">
+                      <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-accent-soft">
+                        <Icon size={16} />
+                      </span>
+                      {href ? (
+                        <a href={href} className="text-sm text-zinc-200 transition-colors hover:text-white">
+                          {label}
+                        </a>
+                      ) : (
+                        <span className="text-sm text-zinc-400">{label}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                <a href={CALENDLY} target="_blank" rel="noopener noreferrer" className="btn-ghost mt-9">
+                  <FiCalendar /> Book a 15-min call <FiArrowUpRight />
+                </a>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <div>
-                  <label htmlFor="name" className="sr-only">Name</label>
-                  <input
-                    id="name"
-                    type="text"
-                    placeholder="Your Name"
-                    required
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="sr-only">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="Email"
-                    required
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="website" className="sr-only">Website (optional)</label>
-                  <input
-                    id="website"
-                    type="url"
-                    placeholder="Your Website (optional)"
-                    value={form.website}
-                    onChange={(e) => setForm({ ...form, website: e.target.value })}
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="message" className="sr-only">Message</label>
-                  <textarea
-                    id="message"
-                    placeholder="Your Message *"
-                    required
-                    rows={5}
-                    value={form.message}
-                    onChange={(e) => setForm({ ...form, message: e.target.value })}
-                    className={`${inputClass} resize-none`}
-                  />
-                </div>
 
-                {status === 'error' && (
-                  <p className="font-sora text-p3 text-error">
-                    Something went wrong. Please try again or email me directly.
-                  </p>
+              {/* Form */}
+              <div>
+                {status === 'success' ? (
+                  <div className="flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-white/10 px-8 py-14 text-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-cyan text-ink-950">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                    <h3 className="font-sora text-h4 font-bold text-white">Message sent!</h3>
+                    <p className="text-sm text-zinc-400">Thanks for reaching out — I&apos;ll get back to you soon.</p>
+                    <button
+                      onClick={() => setStatus('idle')}
+                      className="mt-2 border-b border-accent-soft pb-0.5 font-mono text-xs text-accent-soft transition-colors hover:text-white"
+                    >
+                      Send another message
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label htmlFor="name" className={labelClass}>Name</label>
+                      <input
+                        id="name"
+                        type="text"
+                        placeholder="Ada Lovelace"
+                        required
+                        autoComplete="name"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className={labelClass}>Email</label>
+                      <input
+                        id="email"
+                        type="email"
+                        placeholder="you@company.com"
+                        required
+                        autoComplete="email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label htmlFor="website" className={labelClass}>Website (optional)</label>
+                      <input
+                        id="website"
+                        type="url"
+                        placeholder="https://"
+                        value={form.website}
+                        onChange={(e) => setForm({ ...form, website: e.target.value })}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label htmlFor="message" className={labelClass}>Message</label>
+                      <textarea
+                        id="message"
+                        placeholder="Tell me about the role or project…"
+                        required
+                        rows={5}
+                        value={form.message}
+                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        className={`${inputClass} resize-none`}
+                      />
+                    </div>
+
+                    {status === 'error' && (
+                      <p className="text-sm text-error sm:col-span-2">
+                        Something went wrong. Please try again or email me directly.
+                      </p>
+                    )}
+
+                    <div className="sm:col-span-2">
+                      <button
+                        type="submit"
+                        disabled={status === 'sending'}
+                        className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {status === 'sending' ? 'Sending…' : 'Send message'}
+                        <span aria-hidden>→</span>
+                      </button>
+                    </div>
+                  </form>
                 )}
-
-                <button
-                  type="submit"
-                  disabled={status === 'sending'}
-                  className="self-start bg-black text-white font-sora font-semibold text-p2 px-8 py-3 hover:bg-neutral transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {status === 'sending' ? 'Sending…' : 'Get In Touch'}
-                </button>
-              </form>
-            )}
-          </div>
-
-          {/* Contact details */}
-          <div className="lg:w-80 flex-shrink-0 order-1 lg:order-2">
-            <h2 className="font-sora font-bold text-h2 text-black mb-2 leading-tight">
-              Let's{' '}
-              <span className="relative inline-block">
-                talk
-                <span className="absolute bottom-0.5 left-0 right-0 h-0.5 bg-black" />
-              </span>{' '}
-              for
-            </h2>
-            <h2 className="font-sora font-bold text-h2 text-black mb-6 leading-tight">
-              Something special
-            </h2>
-            <p className="font-sora text-p2 text-zinc-500 leading-relaxed mb-8">
-              Open to full-time ML Engineer and Data Scientist roles starting July 2026.
-              Always happy to discuss projects, research, or collaborations.
-            </p>
-            <div className="flex flex-col gap-3">
-              <a
-                href="mailto:nosherwanbabar@gmail.com"
-                className="font-sora text-p2 text-black hover:text-zinc-500 transition-colors"
-              >
-                nosherwanbabar@gmail.com
-              </a>
-              <a
-                href="tel:+12675919208"
-                className="font-sora text-p2 text-black hover:text-zinc-500 transition-colors"
-              >
-                267-591-9208
-              </a>
+              </div>
             </div>
-            <a
-              href="https://calendly.com/nosherwanbabar/15min"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 bg-black text-white font-sora font-semibold text-p2 px-6 py-3 hover:bg-zinc-800 transition-colors"
-            >
-              Book a Meeting ↗
-            </a>
           </div>
-
-        </div>
+        </Reveal>
       </div>
     </section>
   )
