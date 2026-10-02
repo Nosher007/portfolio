@@ -360,7 +360,10 @@ export class ConstellationEngine {
     const unitsPerPx = (2 * Math.tan(MathUtils.degToRad(camera.fov / 2)) * CAMERA_DIST) / H
     const cx = MathUtils.lerp(s.rect.cx, W / 2, toCentre)
     const cy = MathUtils.lerp(s.rect.cy, H / 2, toCentre)
-    g.position.set((cx - W / 2) * unitsPerPx, (H / 2 - cy) * unitsPerPx, 0)
+    // Shift the projection centre onto the sphere instead of moving the sphere
+    // off-axis, so it stays perfectly round (no perspective skew) in a corner
+    camera.setViewOffset(W, H, W / 2 - cx, H / 2 - cy, W, H)
+    g.position.set(0, 0, 0)
     g.scale.setScalar(s.rect.r * unitsPerPx * zoom)
 
     /* --- 4. rotation: idle spin + pointer tilt, blended with "face this hub" --- */
@@ -461,6 +464,8 @@ export class ConstellationEngine {
     const labelsOn = !c.dive && s.opacity > 0.4 && (mode === 'hero' || (mode === 'dock' && c.dockExpanded))
     tmp.c.setFromMatrixPosition(g.matrixWorld)
     const radius = g.scale.x
+    const menuOpen = mode === 'dock' && c.dockExpanded
+    const placed: { el: HTMLElement; i: number; x: number; y: number; h: number; left: boolean; op: number }[] = []
     for (let i = 0; i < HUB_COUNT; i++) {
       const el = c.labelEls[i]
       if (!el) continue
@@ -474,16 +479,39 @@ export class ConstellationEngine {
       tmp.v.project(camera)
       const sx = ((tmp.v.x + 1) / 2) * W
       const sy = ((1 - tmp.v.y) / 2) * H
-      const left = sx < cx - 4 || mode === 'dock'
-      const op = i === c.focusHub ? 1 : MathUtils.smoothstep(front, -0.45, 0.15)
+      const left = sx < cx
+      let op = i === c.focusHub ? 1 : MathUtils.smoothstep(front, -0.45, 0.15)
+      // The open mini-map is a menu: every destination stays readable and clickable
+      if (menuOpen) op = Math.max(op, 0.8)
       // Sit beside the node, but never past the edge of the screen
       const w = el.offsetWidth
-      const x = MathUtils.clamp(left ? sx - 14 - w : sx + 14, 8, W - w - 8)
-      el.style.visibility = 'visible'
-      el.style.opacity = op.toFixed(3)
-      el.style.pointerEvents = op > 0.35 ? 'auto' : 'none'
-      el.style.transform = `translate3d(${x.toFixed(1)}px, ${sy.toFixed(1)}px, 0) translate(0, -50%)`
-      el.dataset.lit = highlight[i] > 0.55 ? 'true' : 'false'
+      const x = MathUtils.clamp(left ? sx - 12 - w : sx + 12, 8, W - w - 8)
+      placed.push({ el, i, x, y: sy, h: el.offsetHeight, left, op })
+    }
+
+    // Nudge labels on the same side apart so they never overlap
+    for (const side of [true, false]) {
+      const group = placed.filter((p) => p.left === side).sort((a, b) => a.y - b.y)
+      for (let k = 1; k < group.length; k++) {
+        const prev = group[k - 1]
+        const cur = group[k]
+        const minGap = (prev.h + cur.h) / 2 + 6
+        if (cur.y - prev.y < minGap) cur.y = prev.y + minGap
+      }
+      // If the stack ran off the bottom, slide the whole column back up
+      const last = group[group.length - 1]
+      if (last) {
+        const overflow = last.y + last.h / 2 + 8 - H
+        if (overflow > 0) for (const p of group) p.y -= overflow
+      }
+    }
+
+    for (const p of placed) {
+      p.el.style.visibility = 'visible'
+      p.el.style.opacity = p.op.toFixed(3)
+      p.el.style.pointerEvents = p.op > 0.35 ? 'auto' : 'none'
+      p.el.style.transform = `translate3d(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px, 0) translate(0, -50%)`
+      p.el.dataset.lit = highlight[p.i] > 0.55 ? 'true' : 'false'
     }
     return s.opacity > 0.003
   }
