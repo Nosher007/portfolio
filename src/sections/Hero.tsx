@@ -1,81 +1,125 @@
-import heroIllustration from '../assets/images/hero-illustration.svg'
+import { motion } from 'motion/react'
+import CountUp from '../components/ui/CountUp'
+import { SOCIALS } from '../lib/links'
+import { RESUME_URL, scrollToSection } from '../lib/sections'
+
+const stats = [
+  { value: 7, label: 'production ML systems on GCP' },
+  { value: 25, suffix: '+', label: 'services shipped for clients' },
+  { value: 332, label: 'eval tests gating every release' },
+  { value: 3.75, decimals: 2, label: 'GPA · MS Data Science' },
+]
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
+}
+const item = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const } },
+}
 
 export default function Hero() {
   return (
-    <section className="min-h-screen flex items-center pt-16 pb-8">
-      <div className="max-w-content mx-auto px-6 lg:px-20 w-full py-20 lg:py-0">
-        <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12 lg:gap-8">
+    <section className="relative overflow-hidden pb-16 pt-32 lg:pt-36">
+      {/* Backdrop: blueprint grid + two soft glows */}
+      <div aria-hidden className="bg-grid pointer-events-none absolute inset-0" />
+      <div aria-hidden className="pointer-events-none absolute -left-40 top-10 h-[420px] w-[420px] rounded-full bg-accent/20 blur-[120px]" />
+      <div aria-hidden className="pointer-events-none absolute -right-32 top-40 h-[380px] w-[380px] rounded-full bg-accent-cyan/10 blur-[120px]" />
 
-          {/* Text */}
-          <div className="flex-1 text-center lg:text-left">
-            <p className="font-sora text-p2 text-zinc-500 mb-4">
-              MS Data Science · Drexel University · Philadelphia, PA
-            </p>
-            <h1 className="font-sora font-extrabold text-display leading-[1.1] text-black">
-              Hello I'm
-            </h1>
-            <h1 className="font-sora font-extrabold text-display leading-[1.1] text-black">
-              Nosherwan Babar.
-            </h1>
-            <h1 className="font-sora font-extrabold text-display leading-[1.1] text-black mb-6">
-              <span className="relative inline-block">
-                ML Engineer &
-                <span className="absolute -bottom-1 left-0 right-0 h-[5px] bg-black rounded-full" />
+      <div className="relative mx-auto max-w-content px-5 sm:px-6">
+        <div className="grid items-center gap-6 lg:grid-cols-[1.08fr_1fr] lg:gap-4">
+          {/* Copy */}
+          <motion.div variants={container} initial="hidden" animate="show" className="text-center lg:text-left">
+            <motion.div variants={item} className="mb-6 flex justify-center lg:justify-start">
+              <span className="inline-flex items-center gap-2.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.06] px-3.5 py-1.5 font-mono text-[11px] text-emerald-200">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-pulse-ring rounded-full bg-emerald-400" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                </span>
+                Open to full-time ML &amp; AI engineering roles
               </span>
-              <br />
-              Data Scientist
-            </h1>
-            <p className="font-sora text-p1 text-zinc-500 max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed">
-              Specializing in MLOps, LLM-powered systems, and scalable data pipelines.
-              Open to full-time roles starting July 2026.
-            </p>
+            </motion.div>
 
-            {/* Social links */}
-            <div className="flex items-center gap-4 justify-center lg:justify-start">
-              <a
-                href="https://github.com/Nosher007"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="w-10 h-10 border border-zinc-200 flex items-center justify-center hover:border-black hover:bg-black hover:text-white transition-all text-black"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
-                </svg>
+            <motion.p variants={item} className="mb-4 font-mono text-xs text-zinc-500">
+              MS Data Science · Drexel University · Bethesda, MD
+            </motion.p>
+
+            <motion.h1 variants={item} className="font-sora text-mega font-bold text-white">
+              Nosherwan Babar
+            </motion.h1>
+
+            <motion.p variants={item} className="mt-5 font-sora text-xl font-semibold leading-snug text-zinc-200 sm:text-2xl">
+              I build <span className="text-gradient animate-shimmer">production AI systems</span>: agents, RAG, and the
+              MLOps that keeps them running.
+            </motion.p>
+
+            <motion.p variants={item} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-zinc-400 lg:mx-0">
+              Software engineer who ships LLM platforms and puts models into production. Most recently deployed and
+              monitored ML across 7 production systems on GCP at URBN, and built CyberSentinel, a 5-agent RAG platform
+              with a 332-test evaluation suite.
+            </motion.p>
+
+            <motion.div variants={item} className="mt-9 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+              <button type="button" onClick={() => scrollToSection('projects')} className="btn-primary">
+                Explore my work
+                <span aria-hidden>→</span>
+              </button>
+              <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+                Resume ↗
               </a>
-              <a
-                href="https://www.linkedin.com/in/nosherwan-babar/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="w-10 h-10 border border-zinc-200 flex items-center justify-center hover:border-black hover:bg-black hover:text-white transition-all text-black"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-              </a>
-              <a
-                href="mailto:nosherwanbabar@gmail.com"
-                aria-label="Email"
-                className="w-10 h-10 border border-zinc-200 flex items-center justify-center hover:border-black hover:bg-black hover:text-white transition-all text-black"
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                  <polyline points="22,6 12,13 2,6" />
-                </svg>
-              </a>
+              <div className="ml-1 flex items-center gap-2">
+                {SOCIALS.map(({ label, href, Icon }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target={href.startsWith('http') ? '_blank' : undefined}
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-zinc-300 transition-all hover:-translate-y-0.5 hover:border-accent/60 hover:text-white"
+                  >
+                    <Icon size={17} />
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* The 3D network renders on top of this anchor (see Constellation) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="relative mx-auto w-full max-w-[340px] sm:max-w-[440px] lg:max-w-[540px]"
+          >
+            <div id="constellation-anchor" className="relative aspect-square w-full">
+              <div
+                aria-hidden
+                className="absolute inset-[18%] rounded-full bg-[radial-gradient(circle,rgba(139,124,255,0.28),rgba(94,230,255,0.08)_45%,transparent_70%)] blur-2xl"
+              />
             </div>
-          </div>
+            <p className="-mt-2 text-center font-mono text-[11px] text-zinc-500">
+              <span className="text-accent-cyan">↳</span> click a node to explore
+            </p>
+          </motion.div>
+        </div>
 
-          {/* Illustration */}
-          <div className="flex-shrink-0 w-72 lg:w-[420px]">
-            <img
-              src={heroIllustration}
-              alt="Developer illustration"
-              className="w-full h-auto"
-              loading="eager"
-            />
-          </div>
+        {/* Stats */}
+        <div className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.07] lg:grid-cols-4">
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.7 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-ink-950/90 px-5 py-6 sm:px-7"
+            >
+              <p className="font-sora text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                <CountUp to={s.value} decimals={s.decimals} suffix={s.suffix} />
+              </p>
+              <p className="mt-1.5 font-mono text-[11px] leading-snug text-zinc-500">{s.label}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

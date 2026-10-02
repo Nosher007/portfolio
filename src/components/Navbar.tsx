@@ -1,95 +1,118 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useActiveSection } from '../hooks/useActiveSection'
+import { RESUME_URL, SECTIONS } from '../lib/sections'
 
-const navLinks = [
-  { label: 'About Me', href: '#about' },
-  { label: 'Skills', href: '#skills' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Contact Me', href: '#contact' },
-]
+const SECTION_IDS = SECTIONS.map((s) => s.id)
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const active = useActiveSection(SECTION_IDS)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80)
-    window.addEventListener('scroll', onScroll)
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-shadow duration-300 ${
-        scrolled ? 'bg-white shadow-sm' : 'bg-white'
-      }`}
-    >
-      <nav className="max-w-content mx-auto px-6 lg:px-20 h-16 flex items-center justify-between">
-        <a href="#" className="font-sora font-bold text-h5 text-black tracking-tight">
-          NB
+    <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+      <nav
+        className={`mx-auto flex h-14 max-w-content items-center justify-between rounded-full border px-4 transition-all duration-500 sm:px-5 ${
+          scrolled || menuOpen
+            ? 'border-white/10 bg-ink-950/70 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.9)] backdrop-blur-xl'
+            : 'border-transparent bg-transparent'
+        }`}
+      >
+        <a href="#" className="group flex items-center gap-2 font-sora text-lg font-bold tracking-tight text-white">
+          <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-accent to-accent-cyan text-[11px] font-extrabold text-ink-950">
+            NB
+          </span>
+          <span className="hidden sm:inline">Nosherwan</span>
         </a>
 
         {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <li key={link.href}>
-              <a
-                href={link.href}
-                className="font-sora text-p2 font-medium text-neutral hover:text-black transition-colors"
-              >
-                {link.label}
-              </a>
-            </li>
-          ))}
+        <ul className="hidden items-center gap-1 md:flex">
+          {SECTIONS.map((link) => {
+            const isActive = active === link.id
+            return (
+              <li key={link.id} className="relative">
+                <a
+                  href={`#${link.id}`}
+                  aria-current={isActive ? 'true' : undefined}
+                  className={`relative z-10 block rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    isActive ? 'text-white' : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  {link.label}
+                </a>
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full border border-white/10 bg-white/[0.06]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                  />
+                )}
+              </li>
+            )
+          })}
         </ul>
 
-        {/* Resume CTA */}
         <a
-          href="/Resume.pdf"
+          href={RESUME_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden md:flex items-center gap-2 border border-black text-black font-sora text-p3 font-semibold px-4 py-2 hover:bg-black hover:text-white transition-colors"
+          className="hidden items-center gap-2 rounded-full border border-white/15 px-4 py-2 font-sora text-xs font-semibold text-white transition-all hover:border-accent/60 hover:shadow-glow md:inline-flex"
         >
           Resume ↗
         </a>
 
         {/* Hamburger */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="flex flex-col gap-1.5 p-2 md:hidden"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
         >
-          <span className={`block w-6 h-0.5 bg-black transition-transform ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-black transition-opacity ${menuOpen ? 'opacity-0' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-black transition-transform ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          <span className={`block h-0.5 w-6 bg-white transition-transform ${menuOpen ? 'translate-y-2 rotate-45' : ''}`} />
+          <span className={`block h-0.5 w-6 bg-white transition-opacity ${menuOpen ? 'opacity-0' : ''}`} />
+          <span className={`block h-0.5 w-6 bg-white transition-transform ${menuOpen ? '-translate-y-2 -rotate-45' : ''}`} />
         </button>
       </nav>
 
       {/* Mobile drawer */}
-      {menuOpen && (
-        <div className="md:hidden bg-white border-t border-zinc-200 px-6 pb-6">
-          <ul className="flex flex-col gap-4 pt-4">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="font-sora text-p2 font-medium text-neutral hover:text-black"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <a
-            href="/Resume.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-2 border border-black text-black font-sora text-p3 font-semibold px-4 py-2"
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25 }}
+            className="mx-auto mt-2 max-w-content rounded-3xl border border-white/10 bg-ink-950/90 p-6 backdrop-blur-xl md:hidden"
           >
-            Resume ↗
-          </a>
-        </div>
-      )}
+            <ul className="flex flex-col gap-1">
+              {SECTIONS.map((link) => (
+                <li key={link.id}>
+                  <a
+                    href={`#${link.id}`}
+                    className={`block rounded-xl px-3 py-2.5 font-sora text-base ${
+                      active === link.id ? 'bg-white/[0.06] text-white' : 'text-zinc-300'
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a href={RESUME_URL} target="_blank" rel="noopener noreferrer" className="btn-primary mt-4">
+              Resume ↗
+            </a>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   )
 }
