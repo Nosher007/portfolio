@@ -22,6 +22,7 @@ export const projects: Project[] = [
     liveUrl: 'https://cybersentinel-prod.web.app',
     githubUrl: 'https://github.com/Nosher007/cybersentinel',
     image: cybersentinelImg,
+    demo: 'agents',
   },
   {
     number: '02',
@@ -31,6 +32,7 @@ export const projects: Project[] = [
     description:
       'Benchmark study comparing LoRA, adapter, and prefix tuning against full fine-tuning of Flan-T5-base and Llama-3.2-3B on medical and legal QA, with reproducible evaluation that scores accuracy against parameter and compute cost.',
     image: peftImg,
+    demo: 'peft',
   },
   {
     number: '03',
@@ -51,5 +53,6 @@ export const projects: Project[] = [
       'End-to-end churn prediction and spending analysis on multi-source transactional data, comparing gradient-boosted classifiers and neural networks with PCA and per-class evaluation.',
     githubUrl: 'https://github.com/Nosher007',
     image: spendingChurnImg,
+    demo: 'kmeans',
   },
 ]

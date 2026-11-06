@@ -8,6 +8,7 @@ import Experience from './sections/Experience'
 import Projects from './sections/Projects'
 import Skills from './sections/Skills'
 import Contact from './sections/Contact'
+import TrainingRun from './components/viz/TrainingRun'
 
 // three.js is loaded in its own chunk so the page text paints first
 const Constellation = lazy(() => import('./components/constellation/Constellation'))
@@ -54,6 +55,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      <TrainingRun />
     </MotionConfig>
   )
 }

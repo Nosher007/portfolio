@@ -28,5 +28,7 @@ export interface Project {
   githubUrl?: string
   liveUrl?: string
   image?: string
+  /** Live diagram shown instead of the image */
+  demo?: 'agents' | 'peft' | 'kmeans'
   featured?: boolean
 }
