@@ -2,30 +2,29 @@ import { FiArrowUpRight, FiCheck, FiGithub } from 'react-icons/fi'
 import Reveal from '../components/ui/Reveal'
 import SectionHeading from '../components/ui/SectionHeading'
 import Spotlight from '../components/ui/Spotlight'
+import WindowFrame from '../components/ui/WindowFrame'
+import AgentFlowDemo from '../components/viz/AgentFlowDemo'
+import KMeansDemo from '../components/viz/KMeansDemo'
+import PeftDemo from '../components/viz/PeftDemo'
 import { projects } from '../data/projects'
 import type { Project } from '../types'
 
-/** Project artwork in a browser-window frame. The source SVGs are light, so they are inverted for the dark theme. */
-function Preview({ project, caption }: { project: Project; caption: string }) {
+/** A live diagram where the project has one, otherwise its artwork (light SVGs, inverted for the dark theme) */
+function ProjectVisual({ project, caption }: { project: Project; caption: string }) {
+  if (project.demo === 'agents') return <AgentFlowDemo caption={caption} />
+  if (project.demo === 'peft') return <PeftDemo caption={caption} />
+  if (project.demo === 'kmeans') return <KMeansDemo caption={caption} />
   return (
-    <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-ink-950">
-      <div className="flex items-center gap-1.5 border-b border-white/[0.06] px-3.5 py-2.5">
-        <span className="h-2 w-2 rounded-full bg-white/15" />
-        <span className="h-2 w-2 rounded-full bg-white/15" />
-        <span className="h-2 w-2 rounded-full bg-white/15" />
-        <span className="ml-3 truncate font-mono text-[10px] text-zinc-500">{caption}</span>
-      </div>
-      <div className="aspect-video overflow-hidden">
-        {project.image && (
-          <img
-            src={project.image}
-            alt={`${project.title} diagram`}
-            loading="lazy"
-            className="h-full w-full object-cover opacity-90 invert hue-rotate-180 transition-transform duration-700 group-hover/spot:scale-[1.03]"
-          />
-        )}
-      </div>
-    </div>
+    <WindowFrame caption={caption}>
+      {project.image && (
+        <img
+          src={project.image}
+          alt={`${project.title} diagram`}
+          loading="lazy"
+          className="h-full w-full object-cover opacity-90 invert hue-rotate-180 transition-transform duration-700 group-hover/spot:scale-[1.03]"
+        />
+      )}
+    </WindowFrame>
   )
 }
 
@@ -81,7 +80,7 @@ export default function Projects() {
         <Reveal>
           <Spotlight className="card grid gap-8 p-5 transition-all duration-500 hover:border-accent/30 hover:shadow-glow sm:p-7 lg:grid-cols-[1.15fr_1fr] lg:gap-10 lg:p-8">
             <div className="self-center">
-              <Preview project={featured} caption={featured.liveUrl?.replace('https://', '') ?? featured.title} />
+              <ProjectVisual project={featured} caption={featured.liveUrl?.replace('https://', '') ?? featured.title} />
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-3">
@@ -118,7 +117,7 @@ export default function Projects() {
           {rest.map((project, i) => (
             <Reveal key={project.number} delay={i * 0.08} className="h-full">
               <Spotlight className="card flex h-full flex-col p-5 transition-all duration-500 hover:-translate-y-1 hover:border-accent/30 hover:shadow-glow">
-                <Preview project={project} caption={project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} />
+                <ProjectVisual project={project} caption={project.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')} />
                 <div className="mt-5 flex items-center justify-between">
                   <span className="font-mono text-xs text-zinc-500">{project.number}</span>
                   <span className="font-mono text-[11px] text-accent-soft">{project.kind}</span>

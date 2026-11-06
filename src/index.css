@@ -31,8 +31,9 @@
     color: #fff;
   }
 
+  /* Clears the navbar plus the training-run strip under it */
   section[id] {
-    scroll-margin-top: 88px;
+    scroll-margin-top: 124px;
   }
 
   :focus-visible {

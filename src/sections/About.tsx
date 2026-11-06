@@ -1,6 +1,7 @@
 import Reveal from '../components/ui/Reveal'
 import SectionHeading from '../components/ui/SectionHeading'
 import Spotlight from '../components/ui/Spotlight'
+import AttentionText from '../components/viz/AttentionText'
 
 const facts = [
   { label: 'Based in', value: 'Bethesda, MD' },
@@ -31,22 +32,8 @@ export default function About() {
         </SectionHeading>
 
         <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-14">
-          <Reveal className="space-y-5 text-[17px] leading-relaxed text-zinc-400">
-            <p>
-              I&apos;m a software engineer who builds <span className="text-zinc-100">production AI services</span>{' '}
-              and delivers them directly with the people who use them.
-            </p>
-            <p>
-              At Buggcy I shipped 25+ Python and JavaScript services across 4 client engagements, embedded with each
-              customer team from requirements through production. At URBN I deployed and monitored ML across{' '}
-              <span className="text-zinc-100">7 production systems on GCP</span>, from fine-tuning transformers on
-              Vertex AI to drift-triggered retraining in Airflow.
-            </p>
-            <p>
-              I also build and run <span className="text-zinc-100">CyberSentinel</span>, a multi-agent LLM platform
-              with RAG, a 332-test evaluation suite, and responsible-AI safeguards as release gates. I&apos;m finishing
-              my MS in Data Science at Drexel, with a thesis on parameter-efficient fine-tuning.
-            </p>
+          <Reveal className="space-y-5 text-[17px] text-zinc-400">
+            <AttentionText />
 
             <div className="flex flex-wrap gap-2 pt-3">
               {competencies.map((c) => (
