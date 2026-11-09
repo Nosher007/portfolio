@@ -32,3 +32,36 @@ export interface Project {
   demo?: 'agents' | 'peft' | 'kmeans'
   featured?: boolean
 }
+
+export interface OpenSourcePR {
+  number: number
+  title: string
+  url: string
+  mergedAt: string
+  additions: number
+  deletions: number
+  commits: number
+}
+
+export interface OpenSourceStats {
+  url: string
+  description: string
+  stars: number
+  forks: number
+  release?: string
+  license?: string
+  /** All of your merged PRs in the repo, not only the ones listed */
+  totalMerged: number
+  /** Newest first */
+  prs: OpenSourcePR[]
+  /** When this data was read from GitHub (ISO date) */
+  asOf: string
+}
+
+export interface OpenSourceProject {
+  owner: string
+  repo: string
+  role: string
+  /** Shown straight away, and kept if GitHub can't be reached */
+  snapshot: OpenSourceStats
+}
