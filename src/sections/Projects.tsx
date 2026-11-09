@@ -3,6 +3,7 @@ import Reveal from '../components/ui/Reveal'
 import SectionHeading from '../components/ui/SectionHeading'
 import Spotlight from '../components/ui/Spotlight'
 import WindowFrame from '../components/ui/WindowFrame'
+import OpenSource from '../components/opensource/OpenSource'
 import AgentFlowDemo from '../components/viz/AgentFlowDemo'
 import KMeansDemo from '../components/viz/KMeansDemo'
 import PeftDemo from '../components/viz/PeftDemo'
@@ -136,6 +137,8 @@ export default function Projects() {
             </Reveal>
           ))}
         </div>
+
+        <OpenSource />
       </div>
     </section>
   )
